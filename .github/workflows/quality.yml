@@ -1,0 +1,103 @@
+name: quality
+
+# Enforces the repository hard rules at merge time:
+#   - no em-dashes or banned marketing words in tracked source/docs
+#   - PR commit subjects follow Conventional Commits
+#   - console-shell + console-electron typecheck and the renderer build
+# All three jobs must pass for a PR to merge (set as required checks in
+# branch protection). Action versions are pinned by tag rather than SHA
+# because this repo is public and the tags below are maintained majors.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  banned-content:
+    name: banned-content
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history so we can diff the PR / push range and scan only
+          # the files it touches (ratchet mode, see the script header).
+          fetch-depth: 0
+      - name: Resolve changed files
+        id: changed
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            base="$PR_BASE"; head="$PR_HEAD"
+          else
+            base="$PUSH_BEFORE"; head="$PUSH_AFTER"
+          fi
+          # Ratchet only over a real incremental range. A force-push / history
+          # reset / first push leaves no meaningful base (the before-SHA is
+          # unreachable, or it is not an ancestor of head, e.g. a fresh root
+          # commit). In that case scan nothing rather than hard-erroring or
+          # diffing against an unrelated tree.
+          if [ -n "$base" ] && git merge-base --is-ancestor "$base" "$head" 2>/dev/null; then
+            git diff --name-only --diff-filter=ACMR "$base" "$head" > changed.txt
+          else
+            : > changed.txt
+          fi
+          echo "count=$(wc -l < changed.txt)" >> "$GITHUB_OUTPUT"
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "head=$head" >> "$GITHUB_OUTPUT"
+      - name: Scan changed files for em-dashes and banned words
+        env:
+          BASE: ${{ steps.changed.outputs.base }}
+          HEAD: ${{ steps.changed.outputs.head }}
+        run: |
+          mapfile -t files < changed.txt
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No changed files to scan."
+            exit 0
+          fi
+          # Ratchet: scan only the lines added in this range, so pre-existing
+          # em-dashes in touched files do not fail the build (see script header).
+          bash scripts/check-banned-content.sh --range "$BASE" "$HEAD" "${files[@]}"
+
+  commit-lint:
+    name: commit-lint
+    runs-on: ubuntu-latest
+    # Only meaningful on pull_request, where we can diff the PR range.
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate PR commit subjects
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: bash scripts/check-commit-subjects.sh
+
+  typecheck-build:
+    name: typecheck-build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install console-shell deps
+        run: npm ci --prefix console-shell
+      - name: Install console-electron deps
+        run: npm ci --prefix console-electron
+      - name: Typecheck console-shell
+        run: npm --prefix console-shell run typecheck
+      - name: Typecheck console-electron
+        run: npm --prefix console-electron run build:main -- --noEmit
+      - name: Build console-shell renderer
+        run: npm --prefix console-shell run build

@@ -1,0 +1,76 @@
+/*
+ * tokens-dark.css — the dark palette (Refringence's brand default).
+ *
+ * The shared source of truth for dark surface / text / border / accent
+ * values; the app @imports it rather than redefining the palette.
+ *
+ * NEVER add gradients or arbitrary tints here. Surface-elevation
+ * differences are encoded as discrete lightness steps so the visual
+ * hierarchy stays predictable.
+ */
+
+:root {
+    /* Fonts. brand = Geist for wordmarks; sans = Inter for body; mono = JetBrains Mono. */
+    --font-brand: "Geist", "Inter", "SF Pro Display", system-ui, sans-serif;
+    --font-sans:  "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-mono:  "JetBrains Mono", "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+
+    /* Surfaces — 5% lightness step between each elevation. */
+    --surface-primary:   #000000;   /* main chrome background */
+    --surface-secondary: #131313;   /* cards on chrome */
+    --surface-elevated:  #1c1c1c;   /* popovers, dropdowns, dialogs */
+    --surface-overlay:   #262626;   /* side rails, hover states */
+
+    /* Borders — primary subtle, secondary defined, hover bump. */
+    --border-primary:   #262626;
+    --border-secondary: #3a3a3a;
+    --border-hover:     #555555;
+
+    /* Text — WCAG-AA on the surfaces above. */
+    --text-primary:   #fafafa;
+    --text-secondary: #b8b8b8;
+    --text-tertiary:  #6e6e6e;
+
+    /* Accent — Refringence cyan. SAME hue in light mode. */
+    --accent:        #06b6d4;
+    --accent-muted:  oklch(0.7 0.15 195 / 0.15);
+    --accent-fg:     #ffffff;       /* foreground on accent fills */
+
+    /* Status. */
+    --status-success:  #10b981;
+    --status-warning:  #f59e0b;
+    --status-danger:   #f43f5e;
+    --status-info:     #3b82f6;
+    --status-neutral:  #6e6e6e;
+
+    /* Per-section chart accents (kept stable across themes so the
+     * activity-bar indicator and Console metrics tiles read the same). */
+    --chart-1: #3b82f6;
+    --chart-2: #14b8a6;
+    --chart-3: #f59e0b;
+    --chart-4: #a855f7;
+    --chart-5: #ef4444;
+
+    /* Radius scale. */
+    --radius-sm:  4px;
+    --radius-md:  6px;
+    --radius-lg:  10px;
+    --radius-xl:  14px;
+
+    /* Easings. */
+    --ease-out-soft:   cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-fast: cubic-bezier(0.4, 0.0, 0.2, 1);
+
+    /* Density. */
+    --density-row-h:     32px;
+    --density-card-pad:  16px;
+    --density-shell-gap: 12px;
+
+    /* Z-index scale. */
+    --z-base:        0;
+    --z-card:        10;
+    --z-popover:     20;
+    --z-modal:       30;
+    --z-toast:       40;
+    --z-tooltip:     50;
+}

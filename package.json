@@ -1,0 +1,19 @@
+{
+  "name": "console",
+  "private": true,
+  "version": "0.1.1",
+  "description": "Local-first desktop command center for any repo: overview, workboard, repo orientation, a live architecture graph, pipeline, services, release gates, and observability, in a Guided or Operator view, with multi-window multi-project support.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Refringence-AI/console.git"
+  },
+  "scripts": {
+    "build": "npm --prefix console-shell run build && npm --prefix console-electron run build:main",
+    "dist": "npm --prefix console-electron run dist",
+    "pack": "npm --prefix console-electron run pack",
+    "test": "npm --prefix qa test -- --project=console --workers=1",
+    "typecheck": "npm --prefix console-shell run typecheck && npm --prefix console-electron run build:main -- --noEmit",
+    "patch:playwright": "node qa/scripts/patch-playwright-node24.js"
+  }
+}

@@ -1,0 +1,272 @@
+import { useQuery } from '@tanstack/react-query';
+import { AlertTriangle, ArrowUpCircle, CheckCircle2, Loader2, KeyRound, Check, Minus } from 'lucide-react';
+import { bridge } from '../../lib/bridge';
+import { useActiveProject } from '../../lib/activeProject';
+import { SectionLabel } from '@/components/ui';
+import { FixButton, type FixKind } from './FixWithPrompt';
+
+/**
+ * Dependency health: checks the project's declared deps against OSV.dev (known
+ * vulnerabilities) and the npm registry (newer releases). Read-only network
+ * lookups - never installs, writes, or runs the project. Auto-runs once per
+ * panel session (cached 10m); a Re-check forces a fresh pull.
+ */
+export function DependencyHealth() {
+    const { project } = useActiveProject();
+    const root = project?.path ?? '';
+    const scan = useQuery({
+        queryKey: ['deps', 'scan', root],
+        queryFn: () => bridge.deps.scan(root),
+        enabled: root.length > 0,
+        staleTime: 10 * 60_000,
+        refetchOnWindowFocus: false,
+    });
+    const d = scan.data;
+    if (root.length === 0) return null;
+    // npm-only signal; nothing to show for a project with no package.json deps.
+    if (d && d.total === 0 && !scan.isLoading) return null;
+
+    return (
+        <section className="flex flex-col gap-2.5" data-testid="repo-deps-health">
+            <div className="flex items-center gap-2">
+                <SectionLabel>Dependency health</SectionLabel>
+                {d && (
+                    <button
+                        type="button"
+                        onClick={() => void scan.refetch()}
+                        className="ml-auto text-label uppercase tracking-wide text-muted-foreground underline-offset-2 hover:underline"
+                        data-testid="repo-deps-recheck"
+                    >
+                        {scan.isFetching ? 'Checking…' : 'Re-check'}
+                    </button>
+                )}
+            </div>
+            <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4">
+                {scan.isLoading && (
+                    <div className="flex flex-col gap-2.5" data-testid="repo-deps-loading">
+                        <p className="flex items-center gap-2 text-small text-muted-foreground">
+                            <Loader2 className="size-3.5 animate-spin" /> Scanning dependencies against OSV and npm for vulnerable + outdated packages…
+                        </p>
+                        {[0, 1, 2].map((i) => (
+                            <div key={i} className="h-9 animate-pulse rounded-lg bg-secondary/70" />
+                        ))}
+                    </div>
+                )}
+                {scan.isError && <p className="text-small text-danger-text">Could not check dependencies right now.</p>}
+                {d && (
+                    <>
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-small">
+                            <span className="text-muted-foreground">Checked <span className="tabular-nums text-foreground">{d.checked}</span></span>
+                            <span className={d.vulnerable.length ? 'text-danger-text' : 'text-muted-foreground'}>
+                                Vulnerable <span className="tabular-nums">{d.vulnerable.length}</span>
+                            </span>
+                            <span className="text-muted-foreground">Outdated <span className="tabular-nums text-foreground">{d.outdated.length}</span></span>
+                        </div>
+
+                        {d.vulnerable.length === 0 && d.outdated.length === 0 && (
+                            <p className="flex items-center gap-1.5 text-small text-success-text">
+                                <CheckCircle2 className="size-3.5" /> No known vulnerabilities or updates. Looking healthy.
+                            </p>
+                        )}
+
+                        {d.vulnerable.length > 0 && (
+                            <div className="flex flex-col gap-1.5">
+                                {d.vulnerable.slice(0, 6).map((v) => (
+                                    <div key={v.name} className="flex items-center gap-2 rounded-lg border border-border bg-secondary/30 px-3 py-2" data-testid={`repo-vuln-${v.name}`}>
+                                        <AlertTriangle className="size-3.5 shrink-0 text-danger-text" />
+                                        <span className="font-mono text-small text-foreground">{v.name}@{v.version}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => void bridge.openExternal(`https://osv.dev/vulnerability/${v.vulns[0].id}`)}
+                                            className="ml-auto text-label uppercase tracking-wide text-muted-foreground underline-offset-2 hover:underline"
+                                        >
+                                            {v.vulns.length} advisor{v.vulns.length === 1 ? 'y' : 'ies'}
+                                        </button>
+                                    </div>
+                                ))}
+                                {d.vulnerable.length > 6 && (
+                                    <p className="text-label uppercase tracking-wide text-muted-foreground">+{d.vulnerable.length - 6} more vulnerable</p>
+                                )}
+                                <FixButton kind="vulnerable-deps" detail={d.vulnerable.map((v) => `${v.name}@${v.version}`).join(', ')} />
+                            </div>
+                        )}
+
+                        {d.outdated.length > 0 && (
+                            <div className="flex flex-col gap-1.5">
+                                <span className="flex items-center gap-1.5 text-label uppercase tracking-wide text-muted-foreground">
+                                    <ArrowUpCircle className="size-3" /> Updates available
+                                </span>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {d.outdated.slice(0, 12).map((o) => (
+                                        <span key={o.name} className="rounded-md border border-border bg-secondary/40 px-2 py-0.5 font-mono text-label text-muted-foreground">
+                                            {o.name} {o.current}<span className="text-foreground">→{o.latest}</span>
+                                        </span>
+                                    ))}
+                                    {d.outdated.length > 12 && <span className="text-label text-muted-foreground">+{d.outdated.length - 12} more</span>}
+                                </div>
+                                <FixButton kind="outdated-deps" detail={d.outdated.map((o) => `${o.name} ${o.current}->${o.latest}`).join(', ')} />
+                            </div>
+                        )}
+                        {d.error && <p className="text-label text-muted-foreground">Partial result: {d.error}</p>}
+                    </>
+                )}
+            </div>
+        </section>
+    );
+}
+
+/**
+ * Keys in the open: scans source + config for hardcoded secrets (well-known token
+ * formats + private keys). The renderer only ever sees a redacted preview. .env
+ * files are skipped on purpose. Auto-runs once per panel session.
+ */
+export function SecretsCheck() {
+    const { project } = useActiveProject();
+    const root = project?.path ?? '';
+    const scan = useQuery({
+        queryKey: ['secrets', 'scan', root],
+        queryFn: () => bridge.secrets.scan(root),
+        enabled: root.length > 0,
+        staleTime: 10 * 60_000,
+        refetchOnWindowFocus: false,
+    });
+    const d = scan.data;
+    if (root.length === 0) return null;
+
+    return (
+        <section className="flex flex-col gap-2.5" data-testid="repo-secrets-check">
+            <div className="flex items-center gap-2">
+                <SectionLabel>Exposed secrets</SectionLabel>
+                {d && (
+                    <button
+                        type="button"
+                        onClick={() => void scan.refetch()}
+                        className="ml-auto text-label uppercase tracking-wide text-muted-foreground underline-offset-2 hover:underline"
+                    >
+                        {scan.isFetching ? 'Scanning…' : 'Re-scan'}
+                    </button>
+                )}
+            </div>
+            <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4">
+                {scan.isLoading && (
+                    <p className="flex items-center gap-2 text-small text-muted-foreground">
+                        <Loader2 className="size-3.5 animate-spin" /> Scanning source for keys in the open…
+                    </p>
+                )}
+                {d && d.findings.length === 0 && (
+                    <p className="flex items-center gap-1.5 text-small text-success-text">
+                        <CheckCircle2 className="size-3.5" /> No keys found in source. Scanned {d.scanned} files.
+                    </p>
+                )}
+                {d && d.findings.length > 0 && (
+                    <>
+                        <p className="flex items-center gap-1.5 text-small text-danger-text">
+                            <KeyRound className="size-3.5" /> {d.findings.length} possible secret{d.findings.length === 1 ? '' : 's'} in source - move {d.findings.length === 1 ? 'it' : 'them'} to .env.
+                        </p>
+                        <div className="flex flex-col gap-1.5">
+                            {d.findings.slice(0, 8).map((f, i) => (
+                                <div key={`${f.file}:${f.line}:${i}`} className="flex items-center gap-2 rounded-lg border border-border bg-secondary/30 px-3 py-2" data-testid="repo-secret-finding">
+                                    <AlertTriangle className="size-3.5 shrink-0 text-danger-text" />
+                                    <span className="min-w-0 flex-1 truncate font-mono text-small text-foreground" title={`${f.file}:${f.line}`}>
+                                        {f.file}<span className="text-muted-foreground">:{f.line}</span>
+                                    </span>
+                                    <span className="shrink-0 text-label uppercase tracking-wide text-muted-foreground">{f.type}</span>
+                                    <code className="shrink-0 font-mono text-label text-muted-foreground">{f.preview}</code>
+                                </div>
+                            ))}
+                            {d.findings.length > 8 && (
+                                <p className="text-label uppercase tracking-wide text-muted-foreground">+{d.findings.length - 8} more</p>
+                            )}
+                        </div>
+                        <FixButton kind="exposed-secret" detail={d.findings.map((f) => `${f.file}:${f.line}`).join(', ')} />
+                    </>
+                )}
+            </div>
+        </section>
+    );
+}
+
+/**
+ * Project setup: presence of the files a healthy repo carries (README, LICENSE,
+ * .gitignore, CI, lockfile, tests, .env.example). Present items show as chips;
+ * missing ones list a one-line suggestion. Cheap local check, auto-runs.
+ */
+export function HygieneCheck() {
+    const { project } = useActiveProject();
+    const root = project?.path ?? '';
+    const scan = useQuery({
+        queryKey: ['hygiene', 'scan', root],
+        queryFn: () => bridge.hygiene.scan(root),
+        enabled: root.length > 0,
+        staleTime: 5 * 60_000,
+        refetchOnWindowFocus: false,
+    });
+    const d = scan.data;
+    if (root.length === 0) return null;
+    if (d && d.items.length === 0) return null;
+    const present = d ? d.items.filter((i) => i.present) : [];
+    const missing = d ? d.items.filter((i) => !i.present) : [];
+
+    return (
+        <section className="flex flex-col gap-2.5" data-testid="repo-hygiene">
+            <SectionLabel>Project setup</SectionLabel>
+            <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4">
+                {scan.isLoading && (
+                    <div className="flex flex-col gap-2.5" data-testid="repo-hygiene-loading">
+                        <p className="flex items-center gap-2 text-small text-muted-foreground">
+                            <Loader2 className="size-3.5 animate-spin" /> Checking your project files for setup essentials…
+                        </p>
+                        <div className="h-9 w-1/2 animate-pulse rounded-lg bg-secondary/70" />
+                        <div className="h-1.5 w-full animate-pulse rounded-full bg-secondary/40" />
+                        {[0, 1].map((i) => <div key={i} className="h-12 animate-pulse rounded-lg bg-secondary/70" />)}
+                    </div>
+                )}
+                {d && (
+                    <>
+                        <div className="flex items-center gap-3">
+                            <div className={`flex size-9 shrink-0 items-center justify-center rounded-lg text-card-title tabular-nums ${missing.length === 0 ? 'bg-success/15 text-success-text' : 'bg-secondary text-foreground'}`}>
+                                {missing.length === 0 ? <CheckCircle2 className="size-5" /> : present.length}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-card-title text-foreground">{missing.length === 0 ? 'Setup complete' : `${present.length} of ${d.items.length} essentials in place`}</p>
+                                <p className="text-small text-muted-foreground">{missing.length === 0 ? 'This repo has everything a healthy project needs.' : `${missing.length} ${missing.length === 1 ? 'thing' : 'things'} to add before it is ship-ready.`}</p>
+                            </div>
+                        </div>
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+                            <div className="h-full rounded-full bg-success transition-all" style={{ width: `${Math.round((present.length / Math.max(1, d.items.length)) * 100)}%` }} />
+                        </div>
+                        {present.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5">
+                                {present.map((i) => (
+                                    <span key={i.id} className="inline-flex items-center gap-1 rounded-md border border-success/30 bg-success/10 px-2 py-0.5 text-label text-success-text">
+                                        <Check className="size-3" />{i.label}{i.id === 'license' && i.detail && i.detail !== 'present' ? ` · ${i.detail}` : ''}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                        {missing.length === 0 ? (
+                            <p className="flex items-center gap-1.5 text-small text-success-text">
+                                <CheckCircle2 className="size-3.5" /> Everything a healthy repo needs is here.
+                            </p>
+                        ) : (
+                            <div className="flex flex-col gap-1.5">
+                                {missing.map((i) => (
+                                    <div key={i.id} className="group flex items-start gap-2 rounded-lg border border-border bg-secondary/30 px-3 py-2 transition hover:border-foreground/15 hover:bg-secondary/50" data-testid={`repo-hygiene-missing-${i.id}`}>
+                                        <Minus className="mt-0.5 size-3.5 shrink-0 text-warning" />
+                                        <div className="min-w-0 flex-1">
+                                            <span className="text-small font-medium text-foreground">Missing {i.label}</span>
+                                            {i.suggestion && <p className="text-small leading-relaxed text-muted-foreground">{i.suggestion}</p>}
+                                        </div>
+                                        <div className="shrink-0 opacity-0 transition focus-within:opacity-100 group-hover:opacity-100">
+                                            <FixButton kind={`missing-${i.id}` as FixKind} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+        </section>
+    );
+}

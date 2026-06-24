@@ -1,0 +1,41 @@
+name: build-installer
+
+# Builds the Windows installer on GitHub's runners (which have the symbolic-link
+# privilege that winCodeSign extraction needs, so no local Developer Mode is
+# required) and uploads it as a downloadable artifact - grab it from the run's
+# "Artifacts" section. Unsigned, so the installer shows one SmartScreen
+# "More info -> Run anyway" on first launch, then installs + auto-updates.
+#
+# Triggers on a push to launch-prep (so a push builds it) and on a manual
+# Run-workflow click.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [launch-prep]
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install deps
+        run: |
+          npm ci --prefix console-shell
+          npm ci --prefix console-electron
+      - name: Build renderer + main
+        run: npm run build
+      - name: Build NSIS installer (unsigned, no publish)
+        working-directory: console-electron
+        run: npx --no-install electron-builder --win nsis --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Console-Windows-Installer
+          path: release/*.exe
+          if-no-files-found: error

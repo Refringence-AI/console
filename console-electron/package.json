@@ -1,0 +1,112 @@
+{
+  "name": "console-electron",
+  "private": true,
+  "version": "0.1.1",
+  "description": "Console - Electron main process. Owns the window, IPC, the project-intelligence engine, service connectors (safeStorage), and the multi-provider AI layer.",
+  "homepage": "https://github.com/Refringence-AI/console",
+  "main": "dist/main/main.js",
+  "scripts": {
+    "build:main": "tsc -p tsconfig.json",
+    "build:main:watch": "tsc -p tsconfig.json -w",
+    "build:renderer": "npm --prefix ../console-shell run build",
+    "start": "npm run build:renderer && npm run build:main && electron .",
+    "dev": "cross-env REFRINGENCE_CONSOLE_DEV=1 REFRINGENCE_CONSOLE_RENDERER_URL=http://localhost:5174 electron .",
+    "pack": "npm run build:renderer && npm run build:main && electron-builder --dir",
+    "dist": "npm run build:renderer && npm run build:main && electron-builder",
+    "clean": "rimraf dist"
+  },
+  "build": {
+    "appId": "com.refringence.console",
+    "productName": "Console",
+    "copyright": "Copyright 2026 Refringence",
+    "directories": {
+      "output": "../release",
+      "buildResources": "resources"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../console-shell/dist",
+        "to": "renderer"
+      }
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Refringence-AI",
+        "repo": "console"
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "resources/console.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Console",
+      "installerIcon": "resources/console.ico",
+      "uninstallerIcon": "resources/console.ico",
+      "installerSidebar": "resources/installerSidebar.bmp",
+      "installerHeader": "resources/installerHeader.bmp",
+      "license": "resources/license.txt",
+      "include": "resources/installer.nsh"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "resources/console.png",
+      "category": "public.app-category.developer-tools",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "resources/entitlements.mac.plist",
+      "entitlementsInherit": "resources/entitlements.mac.plist"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "resources/console.png",
+      "category": "Development",
+      "maintainer": "Refringence"
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "cross-env": "^7.0.3",
+    "electron": "^35.0.0",
+    "electron-builder": "^25.1.8",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.6.0"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "3.0.85",
+    "@ai-sdk/google": "3.0.83",
+    "@ai-sdk/openai": "3.0.73",
+    "@octokit/auth-app": "^8.0.0",
+    "@octokit/core": "^7.0.0",
+    "@octokit/graphql": "^9.0.0",
+    "@octokit/plugin-retry": "^8.0.0",
+    "@octokit/plugin-throttling": "^11.0.0",
+    "@octokit/request": "^10.0.0",
+    "ai": "6.0.208",
+    "chokidar": "^5.0.0",
+    "electron-updater": "^6.8.0",
+    "execa": "^9.0.0",
+    "langsmith": "^0.7.11",
+    "tree-kill": "^1.2.2",
+    "yaml": "^2.9.0",
+    "zod": "^3.25.76"
+  }
+}

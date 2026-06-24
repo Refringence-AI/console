@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Console icon.
+
+  Derived from the Tango Project "utilities-terminal" icon (Public
+  Domain per https://tango.freedesktop.org/Frequently_Asked_Questions#Terms_of_Use.3F).
+  Original author: warszawianka. Source:
+  https://openclipart.org/detail/35359/tango-utilities-terminal-by-warszawianka.
+
+  Refringence treatment per 2026-06-16 user brief:
+    - Outer bezel becomes "glass-morphic": a frosted glass surface with
+      a subtle white-to-cool-gray gradient, a thin cyan border (the
+      Refringence brand accent), and a glossy highlight strip at the
+      top. The icon reads as "a window into the dev console" rather
+      than "a beige Tango terminal."
+    - Inner green terminal keeps its dark base but gets a refringence-
+      hue overlay (cyan -> purple -> amber -> rose) applied as a
+      translucent diagonal gradient — like light refracted through a
+      prism falling on the CRT phosphor. NOT a solid rainbow stripe;
+      the colour is the *pattern* on the glass, with the green still
+      reading underneath.
+    - Scan lines stay (terminal idiom) but shift from murky green to
+      cyan at 12% opacity — they read as the refracted phosphor lines.
+    - Prompt arrow ">_" stays white for legibility.
+    - Status LED on the lower bezel keeps the "active" affordance but
+      tints toward the brand cyan.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <!-- Outer bezel: frosted-glass gradient.
+         Light at the top, slightly darker / cooler at the bottom. The
+         alpha is intentionally kept high enough (0.20-0.55) so the
+         shape reads against both light and dark task-bar backgrounds. -->
+    <!-- Bezel fill: opaque slate gradient. Doesn't fade into light
+         backgrounds. Subtle vertical falloff for visual depth without
+         pretending to be transparent glass. -->
+    <linearGradient id="rc-glass-bezel" x1="0" y1="0" x2="0" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0"    stop-color="#2a3340"/>
+      <stop offset="0.5"  stop-color="#1f2733"/>
+      <stop offset="1"    stop-color="#161c25"/>
+    </linearGradient>
+
+    <!-- Bezel border: thin solid dark line. Gives the icon edge
+         definition on both light and dark backgrounds. -->
+    <linearGradient id="rc-bezel-border" x1="0" y1="0" x2="0" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0a0d12"/>
+      <stop offset="1" stop-color="#050709"/>
+    </linearGradient>
+
+    <!-- Glossy top highlight: white-to-transparent that gives the
+         "wet glass" sheen on the upper 25% of the bezel. -->
+    <linearGradient id="rc-glass-sheen" x1="0" y1="3.5" x2="0" y2="14" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Screen base: deep green-cyan (cooler than the original Tango
+         "olive" base — keeps the terminal idiom but reads cleaner under
+         the refringence hue overlay). -->
+    <linearGradient id="rc-screen-base" x1="0" y1="7.5" x2="0" y2="36.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2c4234"/>
+      <stop offset="1" stop-color="#0a1410"/>
+    </linearGradient>
+
+    <!-- Refringence-hue overlay: cyan -> purple -> amber -> rose. Applied
+         as a translucent gradient over the green base so the hues
+         *layer* onto the screen rather than replace its colour. The
+         result is a refraction pattern, not a flat rainbow. -->
+    <linearGradient id="rc-refringence-hue" x1="6" y1="8" x2="43" y2="37" gradientUnits="userSpaceOnUse">
+      <stop offset="0"    stop-color="#06b6d4" stop-opacity="0.22"/>
+      <stop offset="0.35" stop-color="#7c3aed" stop-opacity="0.16"/>
+      <stop offset="0.62" stop-color="#a855f7" stop-opacity="0.13"/>
+      <stop offset="0.82" stop-color="#f59e0b" stop-opacity="0.12"/>
+      <stop offset="1"    stop-color="#ef4444" stop-opacity="0.16"/>
+    </linearGradient>
+
+    <!-- Subtle radial highlight on the screen — fakes the curved glass
+         surface of a CRT (or, in our case, a polished refringence
+         prism face). -->
+    <radialGradient id="rc-screen-highlight" cx="14" cy="11" r="18" fx="14" fy="11" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Soft drop shadow under the icon. -->
+    <filter id="rc-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="0.9"/>
+      <feOffset dx="0" dy="1.2"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.35"/></feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- LED halo glow. -->
+    <radialGradient id="rc-led-halo" cx="37" cy="39" r="3" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#06b6d4" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#06b6d4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Outer bezel: opaque slate with thin dark rim + drop shadow. -->
+  <rect x="1.5" y="3.5" width="45" height="39" rx="4.85" ry="4.85"
+        fill="url(#rc-glass-bezel)"
+        stroke="url(#rc-bezel-border)" stroke-width="0.7"
+        filter="url(#rc-shadow)"/>
+
+  <!-- Glass sheen on the upper portion. -->
+  <rect x="2.4" y="4.4" width="43.2" height="7" rx="4" ry="4"
+        fill="url(#rc-glass-sheen)"/>
+
+  <!-- Inner bezel ring — gives the screen a recessed look. -->
+  <rect x="5.0" y="7.0" width="38" height="30" rx="2.0" ry="2.0"
+        fill="#0a0e0c" opacity="0.65"/>
+
+  <!-- Inner screen base. -->
+  <rect x="5.5" y="7.5" width="37" height="29" rx="1.65" ry="1.65"
+        fill="url(#rc-screen-base)"/>
+
+  <!-- Refringence-hue overlay — the *pattern* on glass. -->
+  <rect x="5.5" y="7.5" width="37" height="29" rx="1.65" ry="1.65"
+        fill="url(#rc-refringence-hue)"/>
+
+  <!-- Radial sheen so the screen reads as polished glass. -->
+  <rect x="5.5" y="7.5" width="37" height="29" rx="1.65" ry="1.65"
+        fill="url(#rc-screen-highlight)"/>
+
+  <!-- Scan lines (CRT idiom), cyan at 12% opacity. -->
+  <g stroke="#06b6d4" stroke-width="0.35" stroke-opacity="0.075" fill="none" stroke-linecap="square">
+    <line x1="8" y1="11.5" x2="40" y2="11.5"/>
+    <line x1="8" y1="13.5" x2="40" y2="13.5"/>
+    <line x1="8" y1="15.5" x2="40" y2="15.5"/>
+    <line x1="8" y1="17.5" x2="40" y2="17.5"/>
+    <line x1="8" y1="19.5" x2="40" y2="19.5"/>
+    <line x1="8" y1="21.5" x2="40" y2="21.5"/>
+    <line x1="8" y1="23.5" x2="40" y2="23.5"/>
+    <line x1="8" y1="25.5" x2="40" y2="25.5"/>
+    <line x1="8" y1="27.5" x2="40" y2="27.5"/>
+    <line x1="8" y1="29.5" x2="40" y2="29.5"/>
+    <line x1="8" y1="31.5" x2="40" y2="31.5"/>
+    <line x1="8" y1="33.5" x2="40" y2="33.5"/>
+  </g>
+
+  <!-- Prompt arrow ">" + cursor underscore "_" — Tango Project's path,
+       white for legibility with a subtle cyan stroke for the
+       refringence-hue carry-through. -->
+  <path d="m11.625 20.679v-3.054l8.985 4.061v1.856l-8.985 4.087v-3.045l6.964-1.854-6.964-2.051zm18.893 10.027v1.974h-10.904v-1.974h10.904"
+        fill="#ffffff"
+        stroke="#06b6d4" stroke-width="0.6" stroke-opacity="0.45"/>
+
+  <!-- Inner highlight: subtle 1px edge so the bezel reads as dimensional
+       without screaming "raised button". -->
+  <rect x="2.55" y="4.5" width="42.95" height="37" rx="3.8" ry="3.8"
+        fill="none"
+        stroke="#ffffff" stroke-width="0.4" stroke-opacity="0.13"/>
+
+  <!-- Status LED housing. -->
+  <rect x="35.5" y="37.5" width="4" height="3" rx="0.5" ry="0.5"
+        fill="#0a0a0a"
+        stroke="#535750" stroke-width="0.3"/>
+
+  <!-- LED halo glow (refringence cyan). -->
+  <circle cx="37" cy="39" r="3" fill="url(#rc-led-halo)"/>
+
+  <!-- LED itself — refringence-cyan instead of the original Tango green. -->
+  <rect x="36" y="38" width="2" height="2" rx="0.4" ry="0.4"
+        fill="#06b6d4"/>
+
+  <!-- Tiny white reflection dot on the LED for the "live" feel. -->
+  <circle cx="36.6" cy="38.5" r="0.35" fill="#ffffff" opacity="0.85"/>
+</svg>
