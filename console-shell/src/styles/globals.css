@@ -1,0 +1,498 @@
+/* Console - globals.css
+ *
+ * Theme tokens use the Flo "Vercel" oklch palette
+ * (apps/web/src/index.css in the Flo monorepo). Both light (default,
+ * `:root`) and dark (`.dark` class on html) variants ship. Tailwind v4
+ * `@theme` block bridges the tokens to utility classes (bg-background,
+ * text-foreground, border-border, ring-ring, font-sans, font-serif,
+ * font-mono).
+ *
+ * Fonts: Geist (sans), Geist Mono, Instrument Serif (hero typography).
+ * Loaded via Google Fonts <link> in index.html for best paint time.
+ *
+ * Body rules: letter-spacing -0.011em + text-rendering optimizeLegibility
+ * + antialiased smoothing, per Flo's body rule.
+ *
+ * Hard rules:
+ *   - NO gradients, NO glassmorphism in any component.
+ *   - NO arbitrary Tailwind colour literals - every colour via these vars.
+ *   - Light is the DEFAULT theme for Console.
+ */
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Tailwind v4 token bridge */
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-accent-solid: var(--accent-solid);
+    --color-accent-subtle: var(--accent-subtle);
+    --color-success: var(--success);
+    --color-success-foreground: var(--success-fg);
+    --color-success-text: var(--success-text);
+    --color-warning: var(--warning);
+    --color-warning-foreground: var(--warning-fg);
+    --color-warning-text: var(--warning-text);
+    --color-danger: var(--danger);
+    --color-danger-foreground: var(--danger-fg);
+    --color-danger-text: var(--danger-text);
+    --color-info: var(--info);
+    --color-info-foreground: var(--info-fg);
+    --color-info-text: var(--info-text);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+    --font-sans: var(--font-sans);
+    --font-serif: var(--font-serif);
+    --font-mono: var(--font-mono);
+    /* One card family: buttons/inputs = --radius (10px) via -md; cards/dialogs = 12px
+       via -lg/-xl. Kills the 6/8/10/14 mix so every card reads as one radius. */
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: var(--radius);
+    --radius-lg: calc(var(--radius) * 1.2);
+    --radius-xl: calc(var(--radius) * 1.2);
+}
+
+/* Type scale (Design System v1 A). Generates text-display ... text-metric
+ * utilities that carry size + line-height + tracking + weight together. */
+@theme {
+    --text-display: 32px;
+    --text-display--line-height: 40px;
+    --text-display--letter-spacing: -0.04em;
+    --text-display--font-weight: 600;
+    --text-page-title: 22px;
+    --text-page-title--line-height: 28px;
+    --text-page-title--letter-spacing: -0.022em;
+    --text-page-title--font-weight: 600;
+    --text-section: 18px;
+    --text-section--line-height: 24px;
+    --text-section--letter-spacing: -0.014em;
+    --text-section--font-weight: 600;
+    --text-card-title: 15px;
+    --text-card-title--line-height: 22px;
+    --text-card-title--letter-spacing: -0.01em;
+    --text-card-title--font-weight: 600;
+    --text-body: 14px;
+    --text-body--line-height: 22px;
+    --text-body-strong: 14px;
+    --text-body-strong--line-height: 22px;
+    --text-body-strong--font-weight: 500;
+    --text-small: 12.5px;
+    --text-small--line-height: 18px;
+    --text-label: 11px;
+    --text-label--line-height: 16px;
+    --text-label--letter-spacing: 0.04em;
+    --text-label--font-weight: 500;
+    --text-metric: 24px;
+    --text-metric--line-height: 28px;
+    --text-metric--letter-spacing: -0.01em;
+    --text-metric--font-weight: 600;
+}
+
+/* Console — light (Design System v1: mono chrome + one cyan accent) */
+/* Refraction v3 - neutral (0-chroma) Vercel/shadcn ladder. Chrome is pure neutral;
+   color is meaning only (one calm blue accent for wayfinding + semantic status). */
+:root {
+    --radius: 0.625rem;
+    --background: oklch(0.985 0 0);
+    --foreground: oklch(0.205 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.205 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.205 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.45 0 0);
+    /* ONE calm blue accent - wayfinding only (active nav / links / selection / rare
+       primary-accent). NEVER chrome, status, charts, or the focus ring. */
+    --accent: oklch(0.55 0.20 256);
+    --accent-foreground: oklch(0.985 0 0);
+    --accent-solid: oklch(0.50 0.21 256);
+    --accent-subtle: oklch(0.55 0.20 256 / 0.10);
+    /* Semantic status (separate budget): -fg on-fill, -text colored-on-page. */
+    --success: oklch(0.62 0.17 150); --success-fg: oklch(0.985 0 0); --success-text: oklch(0.52 0.15 150);
+    --warning: oklch(0.72 0.16 70);  --warning-fg: oklch(0.205 0 0); --warning-text: oklch(0.52 0.12 65);
+    --danger:  oklch(0.58 0.22 27);  --danger-fg:  oklch(0.985 0 0); --danger-text:  oklch(0.54 0.20 27);
+    --info:    oklch(0.55 0.20 256); --info-fg:    oklch(0.985 0 0); --info-text:    oklch(0.50 0.18 256);
+    --destructive: oklch(0.58 0.22 27);
+    --destructive-foreground: oklch(0.985 0 0);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    /* charts: status-mapped + the one accent (no rainbow). */
+    --chart-1: oklch(0.55 0.20 256);
+    --chart-2: oklch(0.62 0.17 150);
+    --chart-3: oklch(0.72 0.16 70);
+    --chart-4: oklch(0.58 0.22 27);
+    --chart-5: oklch(0.55 0 0);
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.205 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+    /* Self-hosted (offline-first): "Geist Variable" is registered by the
+     * @fontsource-variable/geist import in main.tsx. Falls back to a system stack. */
+    --font-sans: "Geist Variable", Geist, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-serif: var(--font-sans);
+    --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    /* Legacy aliases kept transitional for components still referencing the
+     * pre-Q3 token names. Will be removed in a Q3 cleanup pass after every
+     * panel rewrite uses the new bg-* / text-* / border-* utilities directly. */
+    --surface-primary:   var(--background);
+    --surface-secondary: var(--card);
+    --surface-elevated:  var(--popover);
+    --surface-overlay:   var(--muted);
+    --text-primary:      var(--foreground);
+    --text-secondary:    var(--muted-foreground);
+    --text-tertiary:     oklch(0.6 0 0);
+    --border-primary:    var(--border);
+    --border-secondary:  var(--input);
+    --border-hover:      var(--ring);
+    --status-danger:     var(--destructive);
+    --accent-muted:      color-mix(in oklab, var(--accent) 50%, transparent);
+    --accent-fg:         var(--accent-foreground);
+    --font-brand:        var(--font-sans);
+}
+
+/* Neutral near-black ladder (NOT pure 0); elevation by lightness + white-alpha
+   borders; off-white text; accent desaturated + decoupled from the focus ring. */
+.dark {
+    --background: oklch(0.13 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.225 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.985 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.62 0.19 256);
+    --accent-foreground: oklch(0.985 0 0);
+    --accent-solid: oklch(0.62 0.19 256);
+    --accent-subtle: oklch(0.62 0.19 256 / 0.16);
+    --success: oklch(0.70 0.15 155); --success-fg: oklch(0.205 0 0); --success-text: oklch(0.78 0.15 152);
+    --warning: oklch(0.80 0.14 85);  --warning-fg: oklch(0.205 0 0); --warning-text: oklch(0.85 0.13 88);
+    --danger:  oklch(0.64 0.20 25);  --danger-fg:  oklch(0.205 0 0); --danger-text:  oklch(0.72 0.17 24);
+    --info:    oklch(0.62 0.19 256); --info-fg:    oklch(0.985 0 0); --info-text:    oklch(0.70 0.15 256);
+    --destructive: oklch(0.64 0.20 25);
+    --destructive-foreground: oklch(0.985 0 0);
+    --border: oklch(1 0 0 / 0.10);
+    --input: oklch(1 0 0 / 0.14);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.62 0.19 256);
+    --chart-2: oklch(0.70 0.15 155);
+    --chart-3: oklch(0.80 0.14 85);
+    --chart-4: oklch(0.64 0.20 25);
+    --chart-5: oklch(0.708 0 0);
+    --sidebar: oklch(0.178 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.985 0 0);
+    --sidebar-primary-foreground: oklch(0.205 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 0.08);
+    --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* Base */
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+    body {
+        @apply bg-background text-foreground;
+        font-family: var(--font-sans);
+        letter-spacing: -0.011em;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        font-feature-settings: "cv01";
+    }
+}
+
+html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Refraction v3: the rotating conic-gradient ring is RETIRED (it read as the
+ * tutorial "rings"). Kept as a harmless positioning context for existing refs;
+ * no decoration. Depth now comes from the elevation ladder + hairline borders. */
+.ds-feature-card {
+    position: relative;
+    isolation: isolate;
+}
+
+/* Shimmer skeleton — replaces animate-pulse loaders. */
+.ds-skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--muted) 25%,
+        color-mix(in oklab, var(--muted) 55%, var(--background)) 50%,
+        var(--muted) 75%
+    );
+    background-size: 200% 100%;
+    animation: ds-shimmer 1.5s linear infinite;
+    border-radius: var(--radius-sm);
+}
+@keyframes ds-shimmer {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ds-feature-card.is-live::before { animation: none; }
+    .ds-skeleton { animation: none; }
+}
+
+/* Strip default focus rings - Radix handles focus visibility per component. */
+*:focus {
+    outline: none;
+}
+*:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+}
+
+/* Frameless window drag region. The top bar moves the window; its interactive
+   children (buttons, links, inputs, menu triggers, and the custom window
+   controls, which are buttons) opt out so they stay clickable. */
+header[data-testid="top-bar"] {
+    -webkit-app-region: drag;
+}
+header[data-testid="top-bar"] button,
+header[data-testid="top-bar"] a,
+header[data-testid="top-bar"] input,
+header[data-testid="top-bar"] [role="button"],
+header[data-testid="top-bar"] [role="menuitem"] {
+    -webkit-app-region: no-drag;
+}
+
+/* Onboarding / landing / tour have no TopBar, so they get their own thin top
+   drag strip + window controls - otherwise the frameless window cannot be
+   moved, minimized, maximized, or closed until you reach the main app. */
+[data-testid="onboarding-drag"] {
+    -webkit-app-region: drag;
+}
+[data-testid="onboarding-drag"] button {
+    -webkit-app-region: no-drag;
+}
+
+/* Scrollbars - thin track with subtle thumb that reads on both themes. */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--foreground) 18%, transparent) transparent;
+}
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--foreground) 14%, transparent);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 5px;
+    min-height: 28px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklab, var(--foreground) 28%, transparent);
+    background-clip: padding-box;
+}
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Fully hidden scrollbar (onboarding panel scrolls internally without a visible
+   track/gutter). Overrides the global thin scrollbar above. */
+.no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+/* Docs panel typography polish - kept from earlier rounds; will migrate to
+ * .prose-flo (Flo's @tailwindcss/typography map) in Q3e when the Docs panel
+ * is rebuilt with Flo's DocsShell + DemoStage. */
+[data-testid="docs-body"] {
+    line-height: 1.65;
+    font-size: 13.5px;
+    color: var(--foreground);
+    max-width: 72ch;
+}
+[data-testid="docs-body"] h1 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    color: var(--foreground);
+}
+[data-testid="docs-body"] h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-top: 1.6rem;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--foreground);
+}
+[data-testid="docs-body"] h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-top: 1.2rem;
+    margin-bottom: 0.4rem;
+    color: var(--foreground);
+}
+[data-testid="docs-body"] h4, [data-testid="docs-body"] h5, [data-testid="docs-body"] h6 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.3rem;
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+[data-testid="docs-body"] p {
+    margin: 0.8rem 0;
+}
+[data-testid="docs-body"] a {
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--primary);
+}
+[data-testid="docs-body"] a:hover {
+    color: var(--primary);
+    border-bottom-style: solid;
+}
+[data-testid="docs-body"] code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--muted);
+    color: var(--foreground);
+    padding: 0.12em 0.32em;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+}
+[data-testid="docs-body"] pre {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.8rem 1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.55;
+}
+[data-testid="docs-body"] pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+}
+[data-testid="docs-body"] ul, [data-testid="docs-body"] ol {
+    margin: 0.8rem 0;
+    padding-left: 1.4rem;
+}
+[data-testid="docs-body"] li {
+    margin: 0.25rem 0;
+}
+[data-testid="docs-body"] li > p {
+    margin: 0.25rem 0;
+}
+[data-testid="docs-body"] blockquote {
+    margin: 1rem 0;
+    padding: 0.4rem 0.9rem;
+    border-left: 3px solid var(--primary);
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 0.95em;
+}
+[data-testid="docs-body"] blockquote p {
+    margin: 0.3rem 0;
+}
+[data-testid="docs-body"] hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.5rem 0;
+}
+[data-testid="docs-body"] table {
+    border-collapse: collapse;
+    margin: 1rem 0;
+    width: 100%;
+    font-size: 0.9em;
+}
+[data-testid="docs-body"] th, [data-testid="docs-body"] td {
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.6rem;
+    text-align: left;
+}
+[data-testid="docs-body"] th {
+    background: var(--card);
+    font-weight: 600;
+}
+[data-testid="docs-body"] img {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    margin: 1rem 0;
+}
+
+[data-testid="docs-tree"] button {
+    transition: background-color 100ms ease, color 100ms ease;
+}
+[data-testid="docs-tree"] button:hover {
+    background: var(--muted);
+    color: var(--foreground);
+}
+[data-testid="docs-tree"] h2 {
+    background: var(--panel, var(--card));
+}

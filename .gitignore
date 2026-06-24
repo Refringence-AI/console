@@ -1,0 +1,96 @@
+node_modules/
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Electron build output
+dist-installer/
+
+# Test artifacts
+test-results/
+playwright-report/
+.refringence-console-qa/
+
+# UI documentation / audit pass artifacts (screenshots, recordings, reports).
+# Local-only study folder for the v3 UI/UX overhaul; never a source artifact.
+.refringence-console-ui-study/
+
+# Arch-overlay scratch the app writes when you edit graph layout
+.refringence-console/
+
+# Design-exploration / diagnostic captures + dev-time grading/interaction/onboarding
+# captures. These are dev artifacts (often of internal projects) and must not ship
+# in the public repo. Only the two README hero images are tracked.
+docs/screenshots/*
+!docs/screenshots/hero-overview.png
+!docs/screenshots/hero-architecture.png
+
+# Orphaned legacy tour images (the Walk through now bundles src/assets/tour/*).
+console-shell/public/tutorial/
+
+# Editor / OS scratch
+.vscode/
+.vs/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Secrets / local state
+.env
+.env.*
+*.pem
+*.key
+secrets.json
+.credentials*
+
+# Logs
+*.log
+*-stdout.log
+*-stderr.log
+
+# Scratch / temp files (commit-message drafts, editor temp)
+*.tmp
+
+# Per-user runtime data (when Console is run from a checkout)
+userData/
+
+# QA artifact root (Playwright traces, screenshots, videos, agent state).
+# Re-runnable forever; never a source artifact.
+.refringence-qa/
+
+# pre-commit / linter caches
+.cache/
+.eslintcache
+
+# Local-only logo preview harness (run via: node docs/design/capture-logo.js)
+docs/design/node_modules/
+docs/design/logo-preview.png
+docs/design/package-lock.json
+
+# Intermediate icon outputs from docs/design/render-icon.js
+docs/design/console-icon-256.png
+docs/design/console-icon.ico
+
+# Design-exploration screen captures and one-off capture scripts. These are
+# scratch references from UI exploration passes, not shippable docs assets.
+docs/design/21st-*.png
+docs/design/theme-*.png
+docs/design/workshop-*.png
+docs/design/hero-capture.js
+
+# Internal grade / report dumps from the autonomous grading passes. Never ship.
+docs/CONSOLE-GRADE-FINAL*.json
+docs/CONSOLE-GRADE-REPORT-*.json
+
+# Root-level research dumps that are not product docs.
+/Competitive Landscape*.md
+docs/internal/
+.commit-msg.tmp
+
+# electron-builder output
+/release/
+
+# Local Claude Code overrides (personal, not shared)
+.claude/settings.local.json
+.claude/*.local.json
