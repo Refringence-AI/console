@@ -1,0 +1,54 @@
+name: release
+
+# Builds the desktop installers on a version tag and publishes them to a GitHub
+# Release. Trigger by pushing a tag like v0.1.0:
+#
+#   git tag v0.1.0 && git push origin v0.1.0
+#
+# electron-builder reads its config + the `github` publish provider from
+# console-electron/package.json and uploads the per-OS artifacts (Windows NSIS,
+# macOS dmg, Linux AppImage + deb) to the release for that tag. Action versions
+# are pinned by maintained-major tag, matching quality.yml.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write # create the GitHub Release + upload assets
+
+jobs:
+  release:
+    name: release-${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # macOS is intentionally excluded until code signing + notarization is
+        # in place: an unsigned .dmg shows "damaged" on Apple Silicon and can't
+        # auto-update. Re-add 'macos-latest' once the Apple Developer cert +
+        # notarize secrets exist (see docs/SIGNING.md).
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install console-shell deps
+        run: npm ci --prefix console-shell
+      - name: Install console-electron deps
+        run: npm ci --prefix console-electron
+      - name: Build renderer + main
+        run: npm run build
+      - name: Package + publish installers
+        working-directory: console-electron
+        run: npx --no-install electron-builder --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # No signing certificate yet, so skip identity auto-discovery; the
+          # unsigned Windows build would otherwise fail looking for one. Windows
+          # auto-update works fine unsigned (one SmartScreen click on first run).
+          # To sign later, use Azure Artifact Signing (win.azureSignOptions) and
+          # drop this line on the Windows leg - see docs/SIGNING.md.
+          CSC_IDENTITY_AUTO_DISCOVERY: false

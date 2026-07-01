@@ -1,0 +1,207 @@
+/*
+ * Library panel editorial typography.
+ *
+ * Matches the [data-testid="docs-body"] rules in globals.css but pushes
+ * the headings into Instrument Serif and tightens the measure for a
+ * "reading the repo like a book" feel.
+ */
+
+[data-testid="library-body"] {
+    line-height: 1.72;
+    font-size: var(--text-body);
+    color: var(--foreground);
+    max-width: 68ch;
+    font-family: var(--font-sans);
+}
+
+[data-testid="library-body"] > *:first-child {
+    margin-top: 0;
+}
+
+[data-testid="library-body"] h1 {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--foreground);
+}
+
+[data-testid="library-body"] h2 {
+    font-family: var(--font-serif);
+    font-size: 1.45rem;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--foreground);
+}
+
+[data-testid="library-body"] h3 {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--foreground);
+}
+
+[data-testid="library-body"] h4,
+[data-testid="library-body"] h5,
+[data-testid="library-body"] h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 1.2rem;
+    margin-bottom: 0.4rem;
+    color: var(--muted-foreground);
+}
+
+[data-testid="library-body"] p {
+    margin: 0.95rem 0;
+}
+
+[data-testid="library-body"] p + p {
+    margin-top: 0.6rem;
+}
+
+[data-testid="library-body"] strong {
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+[data-testid="library-body"] em {
+    font-style: italic;
+    color: var(--foreground);
+}
+
+[data-testid="library-body"] a {
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--primary);
+}
+
+[data-testid="library-body"] a:hover {
+    border-bottom-style: solid;
+}
+
+[data-testid="library-body"] code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--secondary);
+    color: var(--foreground);
+    padding: 0.1em 0.4em;
+    border-radius: 0.3em;
+    border: 1px solid var(--border);
+}
+
+[data-testid="library-body"] pre {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.9rem 1.1rem;
+    margin: 1.1rem 0;
+    overflow-x: auto;
+    font-size: var(--text-small);
+    line-height: 1.55;
+}
+
+[data-testid="library-body"] pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+}
+
+[data-testid="library-body"] ul,
+[data-testid="library-body"] ol {
+    margin: 0.9rem 0;
+    padding-left: 1.6rem;
+}
+
+[data-testid="library-body"] li {
+    margin: 0.3rem 0;
+}
+
+[data-testid="library-body"] li > p {
+    margin: 0.3rem 0;
+}
+
+[data-testid="library-body"] blockquote {
+    margin: 1.2rem 0;
+    padding: 0.6rem 1.1rem;
+    border-left: 3px solid var(--primary);
+    background: var(--secondary);
+    color: var(--muted-foreground);
+    font-style: italic;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+[data-testid="library-body"] blockquote p {
+    margin: 0.3rem 0;
+}
+
+[data-testid="library-body"] hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+}
+
+[data-testid="library-body"] table {
+    border-collapse: collapse;
+    margin: 1rem 0;
+    width: 100%;
+    font-size: 0.9em;
+}
+
+[data-testid="library-body"] th,
+[data-testid="library-body"] td {
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.6rem;
+    text-align: left;
+}
+
+[data-testid="library-body"] th {
+    background: var(--card);
+    font-weight: 600;
+}
+
+[data-testid="library-body"] img {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    margin: 1rem 0;
+}
+
+pre.library-code {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.9rem 1.1rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: var(--text-small);
+    line-height: 1.55;
+    color: var(--foreground);
+}
+
+pre.library-code code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+}
+
+/* Loading shimmer for the folder-nav skeleton rows. */
+@keyframes library-shimmer {
+    100% { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-testid="library-list-loading"] * {
+        animation: none !important;
+    }
+}

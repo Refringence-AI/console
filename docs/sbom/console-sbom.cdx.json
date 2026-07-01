@@ -1,0 +1,37 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-06-18T03:57:32Z",
+    "lifecycles": [{ "phase": "build" }],
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "@cyclonedx",
+          "name": "cyclonedx-npm",
+          "version": "placeholder"
+        }
+      ]
+    },
+    "component": {
+      "type": "application",
+      "name": "refringence-console",
+      "version": "0.1.0-dev.1",
+      "description": "Console desktop app (console-shell + console-electron)."
+    },
+    "properties": [
+      {
+        "name": "refringence:sbom:status",
+        "value": "placeholder"
+      },
+      {
+        "name": "refringence:sbom:note",
+        "value": "Committed stub so docs/sbom has a real target before the first generated run. Regenerate with scripts/generate-sbom.sh, which overwrites this file with the resolved dependency tree."
+      }
+    ]
+  },
+  "components": []
+}

@@ -1,0 +1,18 @@
+{
+  "name": "@refringence/design-tokens",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Shared design tokens for the desktop app (dark) and Console (light). Single CSS file imported by both renderers.",
+  "main": "src/tokens.css",
+  "files": [
+    "src/tokens.css",
+    "src/tokens-dark.css",
+    "src/tokens-light.css",
+    "README.md"
+  ],
+  "exports": {
+    ".": "./src/tokens.css",
+    "./dark": "./src/tokens-dark.css",
+    "./light": "./src/tokens-light.css"
+  }
+}

@@ -1,0 +1,23 @@
+name: release-please
+
+# Maintains a single rolling "release" PR that bumps the version (root +
+# console-electron + console-shell package.json) and updates CHANGELOG.md from
+# the Conventional Commit messages on main. Merging that PR tags vX.Y.Z, which
+# fires release.yml to build and publish the installers. Skip it and the manual
+# `npm version` + `git tag` loop still works - this just automates the bookkeeping.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

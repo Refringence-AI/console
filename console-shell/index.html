@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Console</title>
+    <!-- Geist (sans) + Geist Mono are now SELF-HOSTED (offline-first) via
+         @fontsource-variable/geist, imported in main.tsx and bundled by Vite.
+         No Google Fonts CDN dependency at runtime. -->
+
+    <script>
+      // Apply persisted theme before first paint to avoid the flash-of-
+      // wrong-theme. Console defaults to light. The toggle persists via
+      // localStorage. The window is frameless and draws its own controls
+      // (WindowControls.tsx), so there is no OS caption strip to recolor.
+      try {
+        var t = localStorage.getItem('refringence-console-theme');
+        if (t === 'dark') document.documentElement.classList.add('dark');
+      } catch (_) { /* noop */ }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

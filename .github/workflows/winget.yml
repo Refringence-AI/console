@@ -1,0 +1,24 @@
+name: winget
+
+# Auto-submits a winget-pkgs PR on every published GitHub Release so
+# `winget install Refringence.Console` stays current. One-time setup:
+#   1. Fork microsoft/winget-pkgs into Refringence-AI/winget-pkgs.
+#   2. Create a classic PAT with `public_repo` scope, store it as the repo
+#      secret WINGET_TOKEN (fine-grained PATs are not supported by the action).
+# The very first submission is manual (wingetcreate) - see docs; this automates
+# every release after that. winget accepts unsigned installers.
+
+on:
+  release:
+    types: [released] # only published (non-draft, non-prerelease) releases
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: vedantmgoyal9/winget-releaser@main
+        with:
+          identifier: Refringence.Console
+          installers-regex: 'Console.*Setup.*\.exe$' # the NSIS installer only
+          max-versions-to-keep: 5
+          token: ${{ secrets.WINGET_TOKEN }}

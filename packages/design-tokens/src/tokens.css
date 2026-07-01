@@ -1,0 +1,29 @@
+/*
+ * @refringence/design-tokens — shared design tokens
+ *
+ * Source of truth for surface / text / border / accent CSS variables
+ * (Console defaults to light).
+ *
+ * The renderer `@import`s this file. Per-app overrides live in the
+ * app's own globals.css after this import.
+ *
+ * Selector strategy: `:root` defines the dark palette; `[data-theme="light"]`
+ * swaps to the light palette (Console's default). The renderer sets
+ * `data-theme` on `<html>` based on user preference.
+ *
+ * NO gradients, NO arbitrary Tailwind colour literals in consuming
+ * components. All colours via these CSS variables. Hard rule
+ * (see console-shell/CLAUDE.md).
+ */
+
+@import "./tokens-dark.css";
+@import "./tokens-light.css";
+
+/* ── Tailwind v4 @theme bridge ──────────────────────────────────
+ * Maps the CSS variables above to the names Tailwind v4 expects so
+ * `bg-background`, `text-foreground`, `border-border`, `ring-ring`,
+ * `font-brand` emit valid utilities WITHOUT a tailwind.config.js.
+ * Consuming shells include their own @import "tailwindcss" + their
+ * own @theme block; this file does NOT import tailwind itself so it
+ * stays usable from non-tailwind contexts (Storybook, docs).
+ */
